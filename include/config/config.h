@@ -8,7 +8,7 @@ const bool OptLinger = false;           // 是否优雅退出
 
 const int MySQLPort = 3306;             // MySQL端口号
 const char *MySQLUser = "root";         // MySQL用户名
-const char *MySQLPasswd = "123";        // MySQL密码
+const char *MySQLPasswd = "wxl7756212";        // MySQL密码
 const char *DataBaseName = "webserver"; // MySQL数据库名
 
 const int ConnPoolNum = 12;         // 连接池数量

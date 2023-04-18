@@ -28,7 +28,7 @@ void HttpConn::init(int fd, const sockaddr_in& addr) {
 
 void HttpConn::Close() {
     response_.UnmapFile();
-    if(isClose_ == false){
+    if (isClose_ == false) {
         isClose_ = true; 
         userCount--;
         close(fd_);
@@ -67,34 +67,33 @@ ssize_t HttpConn::write(int* saveErrno) {
     ssize_t len = -1;
     do {
         len = writev(fd_, iov_, iovCnt_);
-        if(len <= 0) {
+        if (len <= 0) {
             *saveErrno = errno;
             break;
         }
-        if(iov_[0].iov_len + iov_[1].iov_len  == 0) { break; } /* 传输结束 */
-        else if(static_cast<size_t>(len) > iov_[0].iov_len) {
+        if (iov_[0].iov_len + iov_[1].iov_len  == 0) { 
+            break; /* 传输结束 */
+        } else if (static_cast<size_t>(len) > iov_[0].iov_len) {
             iov_[1].iov_base = (uint8_t*) iov_[1].iov_base + (len - iov_[0].iov_len);
             iov_[1].iov_len -= (len - iov_[0].iov_len);
-            if(iov_[0].iov_len) {
+            if (iov_[0].iov_len) {
                 writeBuff_.RetrieveAll();
                 iov_[0].iov_len = 0;
             }
-        }
-        else {
+        } else {
             iov_[0].iov_base = (uint8_t*)iov_[0].iov_base + len; 
             iov_[0].iov_len -= len; 
             writeBuff_.Retrieve(len);
         }
-    } while(isET || ToWriteBytes() > 10240);
+    } while (isET || ToWriteBytes() > 10240);
     return len;
 }
 
 bool HttpConn::process() {
     request_.Init();
-    if(readBuff_.ReadableBytes() <= 0) {
+    if (readBuff_.ReadableBytes() <= 0) {
         return false;
-    }
-    else if(request_.parse(readBuff_)) {
+    } else if (request_.parse(readBuff_)) {
         LOG_DEBUG("%s", request_.path().c_str());
         response_.Init(srcDir, request_.path(), request_.IsKeepAlive(), 200);
     } else {
@@ -108,7 +107,7 @@ bool HttpConn::process() {
     iovCnt_ = 1;
 
     /* 文件 */
-    if(response_.FileLen() > 0  && response_.File()) {
+    if (response_.FileLen() > 0 && response_.File()) {
         iov_[1].iov_base = response_.File();
         iov_[1].iov_len = response_.FileLen();
         iovCnt_ = 2;

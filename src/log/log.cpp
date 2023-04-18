@@ -12,14 +12,14 @@ Log::Log() {
 }
 
 Log::~Log() {
-    if(writeThread_ && writeThread_->joinable()) {
-        while(!deque_->empty()) {
+    if (writeThread_ && writeThread_->joinable()) {
+        while (!deque_->empty()) {
             deque_->flush();
         };
         deque_->Close();
         writeThread_->join();
     }
-    if(fp_) {
+    if (fp_) {
         lock_guard<mutex> locker(mtx_);
         flush();
         fclose(fp_);
@@ -40,9 +40,9 @@ void Log::init(int level = 1, const char* path, const char* suffix,
     int maxQueueSize) {
     isOpen_ = true;
     level_ = level;
-    if(maxQueueSize > 0) {
+    if (maxQueueSize > 0) {
         isAsync_ = true;
-        if(!deque_) {
+        if (!deque_) {
             unique_ptr<BlockDeque<std::string>> newDeque(new BlockDeque<std::string>);
             deque_ = move(newDeque);
             
@@ -68,13 +68,13 @@ void Log::init(int level = 1, const char* path, const char* suffix,
     {
         lock_guard<mutex> locker(mtx_);
         buff_.RetrieveAll();
-        if(fp_) { 
+        if (fp_) { 
             flush();
             fclose(fp_); 
         }
 
         fp_ = fopen(fileName, "a");
-        if(fp_ == nullptr) {
+        if (fp_ == nullptr) {
             mkdir(path_, 0777);
             fp_ = fopen(fileName, "a");
         } 
@@ -134,7 +134,7 @@ void Log::write(int level, const char *format, ...) {
         buff_.HasWritten(m);
         buff_.Append("\n\0", 2);
 
-        if(isAsync_ && deque_ && !deque_->full()) {
+        if (isAsync_ && deque_ && !deque_->full()) {
             deque_->push_back(buff_.RetrieveAllToStr());
         } else {
             fputs(buff_.Peek(), fp_);
@@ -164,7 +164,7 @@ void Log::AppendLogLevelTitle_(int level) {
 }
 
 void Log::flush() {
-    if(isAsync_) { 
+    if (isAsync_) { 
         deque_->flush(); 
     }
     fflush(fp_);
@@ -172,7 +172,7 @@ void Log::flush() {
 
 void Log::AsyncWrite_() {
     string str = "";
-    while(deque_->pop(str)) {
+    while (deque_->pop(str)) {
         lock_guard<mutex> locker(mtx_);
         fputs(str.c_str(), fp_);
     }

@@ -36,7 +36,7 @@ void SqlConnPool::Init(const char* host, int port,
 
 MYSQL* SqlConnPool::GetConn() {
     MYSQL *sql = nullptr;
-    if(connQue_.empty()){
+    if (connQue_.empty()){
         LOG_WARN("SqlConnPool busy!");
         return nullptr;
     }
@@ -58,7 +58,7 @@ void SqlConnPool::FreeConn(MYSQL* sql) {
 
 void SqlConnPool::ClosePool() {
     lock_guard<mutex> locker(mtx_);
-    while(!connQue_.empty()) {
+    while (!connQue_.empty()) {
         auto item = connQue_.front();
         connQue_.pop();
         mysql_close(item);

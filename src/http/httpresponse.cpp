@@ -51,7 +51,7 @@ HttpResponse::~HttpResponse() {
 
 void HttpResponse::Init(const string& srcDir, string& path, bool isKeepAlive, int code){
     assert(srcDir != "");
-    if(mmFile_) { UnmapFile(); }
+    if (mmFile_) { UnmapFile(); }
     code_ = code;
     isKeepAlive_ = isKeepAlive;
     path_ = path;
@@ -62,13 +62,13 @@ void HttpResponse::Init(const string& srcDir, string& path, bool isKeepAlive, in
 
 void HttpResponse::MakeResponse(Buffer& buff) {
     /* 判断请求的资源文件 */
-    if(stat((srcDir_ + path_).data(), &mmFileStat_) < 0 || S_ISDIR(mmFileStat_.st_mode)) {
+    if (stat((srcDir_ + path_).data(), &mmFileStat_) < 0 || S_ISDIR(mmFileStat_.st_mode)) {
         code_ = 404;
     }
-    else if(!(mmFileStat_.st_mode & S_IROTH)) {
+    else if (!(mmFileStat_.st_mode & S_IROTH)) {
         code_ = 403;
     }
-    else if(code_ == -1) { 
+    else if (code_ == -1) { 
         code_ = 200; 
     }
     ErrorHtml_();
@@ -86,7 +86,7 @@ size_t HttpResponse::FileLen() const {
 }
 
 void HttpResponse::ErrorHtml_() {
-    if(CODE_PATH.count(code_) == 1) {
+    if (CODE_PATH.count(code_) == 1) {
         path_ = CODE_PATH.find(code_)->second;
         stat((srcDir_ + path_).data(), &mmFileStat_);
     }
@@ -94,7 +94,7 @@ void HttpResponse::ErrorHtml_() {
 
 void HttpResponse::AddStateLine_(Buffer& buff) {
     string status;
-    if(CODE_STATUS.count(code_) == 1) {
+    if (CODE_STATUS.count(code_) == 1) {
         status = CODE_STATUS.find(code_)->second;
     }
     else {
@@ -106,7 +106,7 @@ void HttpResponse::AddStateLine_(Buffer& buff) {
 
 void HttpResponse::AddHeader_(Buffer& buff) {
     buff.Append("Connection: ");
-    if(isKeepAlive_) {
+    if (isKeepAlive_) {
         buff.Append("keep-alive\r\n");
         buff.Append("keep-alive: max=6, timeout=120\r\n");
     } else{
@@ -117,7 +117,7 @@ void HttpResponse::AddHeader_(Buffer& buff) {
 
 void HttpResponse::AddContent_(Buffer& buff) {
     int srcFd = open((srcDir_ + path_).data(), O_RDONLY);
-    if(srcFd < 0) { 
+    if (srcFd < 0) { 
         ErrorContent(buff, "File NotFound!");
         return; 
     }
@@ -126,7 +126,7 @@ void HttpResponse::AddContent_(Buffer& buff) {
         MAP_PRIVATE 建立一个写入时拷贝的私有映射*/
     LOG_DEBUG("file path %s", (srcDir_ + path_).data());
     int* mmRet = (int*)mmap(0, mmFileStat_.st_size, PROT_READ, MAP_PRIVATE, srcFd, 0);
-    if(*mmRet == -1) {
+    if (*mmRet == -1) {
         ErrorContent(buff, "File NotFound!");
         return; 
     }
@@ -136,7 +136,7 @@ void HttpResponse::AddContent_(Buffer& buff) {
 }
 
 void HttpResponse::UnmapFile() {
-    if(mmFile_) {
+    if (mmFile_) {
         munmap(mmFile_, mmFileStat_.st_size);
         mmFile_ = nullptr;
     }
@@ -145,11 +145,11 @@ void HttpResponse::UnmapFile() {
 string HttpResponse::GetFileType_() {
     /* 判断文件类型 */
     string::size_type idx = path_.find_last_of('.');
-    if(idx == string::npos) {
+    if (idx == string::npos) {
         return "text/plain";
     }
     string suffix = path_.substr(idx);
-    if(SUFFIX_TYPE.count(suffix) == 1) {
+    if (SUFFIX_TYPE.count(suffix) == 1) {
         return SUFFIX_TYPE.find(suffix)->second;
     }
     return "text/plain";
@@ -161,7 +161,7 @@ void HttpResponse::ErrorContent(Buffer& buff, string message)
     string status;
     body += "<html><title>Error</title>";
     body += "<body bgcolor=\"ffffff\">";
-    if(CODE_STATUS.count(code_) == 1) {
+    if (CODE_STATUS.count(code_) == 1) {
         status = CODE_STATUS.find(code_)->second;
     } else {
         status = "Bad Request";

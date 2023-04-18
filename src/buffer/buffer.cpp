@@ -24,7 +24,7 @@ void Buffer::Retrieve(size_t len) {
 }
 
 void Buffer::RetrieveUntil(const char* end) {
-    assert(Peek() <= end );
+    assert(Peek() <= end);
     Retrieve(end - Peek());
 }
 
@@ -90,13 +90,11 @@ ssize_t Buffer::ReadFd(int fd, int* saveErrno) {
     iov[1].iov_len = sizeof(buff);
 
     const ssize_t len = readv(fd, iov, 2);
-    if(len < 0) {
+    if (len < 0) {
         *saveErrno = errno;
-    }
-    else if(static_cast<size_t>(len) <= writable) {
+    } else if (static_cast<size_t>(len) <= writable) {
         writePos_ += len;
-    }
-    else {
+    } else {
         writePos_ = buffer_.size();
         Append(buff, len - writable);
     }
@@ -106,7 +104,7 @@ ssize_t Buffer::ReadFd(int fd, int* saveErrno) {
 ssize_t Buffer::WriteFd(int fd, int* saveErrno) {
     size_t readSize = ReadableBytes();
     ssize_t len = write(fd, Peek(), readSize);
-    if(len < 0) {
+    if (len < 0) {
         *saveErrno = errno;
         return len;
     } 
@@ -123,10 +121,9 @@ const char* Buffer::BeginPtr_() const {
 }
 
 void Buffer::MakeSpace_(size_t len) {
-    if(WritableBytes() + PrependableBytes() < len) {
+    if (WritableBytes() + PrependableBytes() < len) {
         buffer_.resize(writePos_ + len + 1);
-    } 
-    else {
+    } else {
         size_t readable = ReadableBytes();
         std::copy(BeginPtr_() + readPos_, BeginPtr_() + writePos_, BeginPtr_());
         readPos_ = 0;
