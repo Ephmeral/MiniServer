@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(MiniServer)
 
 # 设置 C++ 标准
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # 添加头文件路径
 include_directories(include/buffer)

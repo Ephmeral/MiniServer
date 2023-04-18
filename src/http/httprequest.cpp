@@ -174,9 +174,9 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
     assert(sql);
     
     bool flag = false;
-    unsigned int j = 0;
+    // unsigned int j = 0;
     char order[256] = { 0 };
-    MYSQL_FIELD *fields = nullptr;
+    // MYSQL_FIELD *fields = nullptr;
     MYSQL_RES *res = nullptr;
     
     if (!isLogin) { flag = true; }
@@ -189,8 +189,8 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
         return false; 
     }
     res = mysql_store_result(sql);
-    j = mysql_num_fields(res);
-    fields = mysql_fetch_fields(res);
+    mysql_num_fields(res);
+    mysql_fetch_fields(res);
 
     while (MYSQL_ROW row = mysql_fetch_row(res)) {
         LOG_DEBUG("MYSQL ROW: %s %s", row[0], row[1]);
@@ -202,8 +202,7 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
                 flag = false;
                 LOG_DEBUG("pwd error!");
             }
-        } 
-        else { 
+        } else { 
             flag = false; 
             LOG_DEBUG("user used!");
         }
