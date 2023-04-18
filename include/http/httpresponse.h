@@ -46,4 +46,4 @@ private:
 };
 
 
-#endif //HTTP_RESPONSE_H
+#endif // HTTP_RESPONSE_H

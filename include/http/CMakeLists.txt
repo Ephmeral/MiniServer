@@ -1,3 +1,3 @@
-# include/buffer/CMakeLists.txt
+# include/http/CMakeLists.txt
 file(GLOB HEADER_FILES "*.h")
 install(FILES ${HEADER_FILES} DESTINATION include/http)
