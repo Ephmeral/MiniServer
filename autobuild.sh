@@ -4,4 +4,4 @@ set -x
 rm -rf `pwd`/build/*
 cd `pwd`/build &&
 	cmake .. &&
-	make -j2
+	make -j4
