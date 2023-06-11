@@ -14,13 +14,13 @@
 #include <string.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <stdlib.h>`
+#include <stdlib.h>
 #include <sys/mman.h>
+#include <sys/uio.h>
 #include <stdarg.h>
 #include <errno.h>
 #include "../lock/lock.h"
 
-    
 class HTTPConn {
 public:
     /* 文件名的最大长度 */
@@ -41,7 +41,7 @@ public:
 public:
     HTTPConn() {}
     ~HTTPConn() {}
-
+    
 public:
     /* 初始化新接受的连接 */
     void init(int sockfd, const sockaddr_in& addr);

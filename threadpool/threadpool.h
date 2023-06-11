@@ -37,7 +37,7 @@ ThreadPool<T>::ThreadPool(int thread_number, int max_requests) :
     m_threads(NULL) {
     
     if ((thread_number <= 0) || max_requests <= 0) {
-        thorw std::exception();
+        throw std::exception();
     }
     m_threads = new pthread_t[m_thread_number];
     if (!m_threads) {
@@ -71,7 +71,7 @@ bool ThreadPool<T>::append(T *request) {
         m_queuelocker.lock();
         return false;
     }
-    m_wordqueue.push_back(request);
+    m_workqueue.push_back(request);
     m_queuelocker.unlock();
     m_queuestat.post();
     return true;
@@ -93,14 +93,15 @@ void ThreadPool<T>::run() {
             m_queuelocker.unlock();
             continue;
         }
+        T* request = m_workqueue.front();
+        m_workqueue.pop_front();
+        m_queuelocker.unlock();
+        if (!request) {
+            //continue;
+        }
+        request->process();
     }
-    T* request = m_wordqueue.front();
-    m_wordqueue.pop_front();
-    m_queuelocker.unlock();
-    if (!request) {
-        continue;
-    }
-    request->process();
+
 }
 
 #endif // THREADPOOL_H
